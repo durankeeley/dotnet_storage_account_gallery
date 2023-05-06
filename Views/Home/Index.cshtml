@@ -1,0 +1,60 @@
+﻿@model IEnumerable<AzureBlobStorageApp.Models.ImageModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1>Welcome to Azure Blob Storage Image Gallery</h1>
+</div>
+
+@if (ViewBag.PublicAccessLevel != Azure.Storage.Blobs.Models.PublicAccessType.Blob && ViewBag.PublicAccessLevel != Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer)
+{
+    <div class="alert alert-warning" role="alert">
+        There is no public access to the container. No images can be displayed.
+    </div>
+}
+else
+{
+    <div class="container">
+    <div class="row">
+        @{
+            int imageId = 0;
+        }
+        @foreach (var image in Model)
+        {
+            <div class="col-md-4">
+                <div class="card" style="width: 18rem;">
+                    <img src="@image.Uri" class="card-img-top" alt="@image.Name" data-toggle="modal" data-target="#imageModal">
+                    <div class="card-body">
+                        <a href="@Url.Action("DownloadImage", "Home", new { imageName = image.Name })" class="btn btn-primary">Download</a>
+                    </div>
+                </div>
+            </div>
+            imageId++;
+        }
+    </div>
+
+</div>
+}
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="" id="imageModalSrc" class="img-fluid" alt="Selected Image">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.card-img-top').on('click', function () {
+                var imageSrc = $(this).attr('src');
+                $('#imageModalSrc').attr('src', imageSrc);
+                $('#imageModal').modal('show');
+            });
+        });
+    </script>
+}
